@@ -34,13 +34,15 @@ def user_login():
             if line[1] == password:
                 logged_in = True
 
+
+"""
     if logged_in:
         print("Logged in successfully")
     else:
         print("Username / Password is incorrect.")
         user_login()  # Call the function again for another attempt
+"""
 
-# Start the login process
 user_login()
 
 
