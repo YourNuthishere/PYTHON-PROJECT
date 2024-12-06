@@ -1,4 +1,6 @@
 # we should code the backend here
+<<<<<<< HEAD
+=======
 
 #creat repeat
 def create_account():
@@ -52,6 +54,7 @@ create_account()  # Prompt the user to create an account first
 user_login()      # After account creation, prompt for login
 """
 
+>>>>>>> 7302d12340aadb94e5c21afee4cc3419c0f7926f
 
 # Create account function
 def create_account():
