@@ -1,68 +1,9 @@
-import json
-import bcrypt
-import os
 import tkinter as tk
 from tkinter import messagebox
-import string
 import random
+import string
+import os
 
-# File to store user data
-USER_DATA_FILE = 'users.json'
-
-# Ensure the data file exists
-def ensure_file_exists():
-    if not os.path.exists(USER_DATA_FILE):
-        with open(USER_DATA_FILE, 'w') as file:
-            json.dump({}, file)
-
-# Load user data from file
-def load_user_data():
-    try:
-        with open(USER_DATA_FILE, 'r') as file:
-            return json.load(file)
-    except FileNotFoundError:
-        return {}
-
-# Save user data to file
-def save_user_data(user_data):
-    with open(USER_DATA_FILE, 'w') as file:
-        json.dump(user_data, file, indent=4)
-
-# Check if a password is already used
-def is_password_used(password):
-    user_data = load_user_data()
-    for hashed_password in user_data.values():
-        if bcrypt.checkpw(password.encode(), hashed_password.encode()):
-            return True
-    return False
-
-# Register a new user
-def register_user(username, password):
-    user_data = load_user_data()
-    if username in user_data:
-        messagebox.showerror("Error", "Username already exists.")
-        return
-    if is_password_used(password):
-        messagebox.showerror("Error", "This password is already in use. Please choose a different password.")
-        return
-    hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
-    user_data[username] = hashed_password.decode()
-    save_user_data(user_data)
-    messagebox.showinfo("Success", "User registered successfully!")
-
-# Authenticate a user
-def login_user(username, password):
-    user_data = load_user_data()
-    if username not in user_data:
-        messagebox.showerror("Error", "Username not found.")
-        return
-    hashed_password = user_data[username].encode()
-    if bcrypt.checkpw(password.encode(), hashed_password):
-        messagebox.showinfo("Success", "Login successful!")
-        return
-    messagebox.showerror("Error", "Incorrect password.")
-
-# GUI Functions
 # Ensure the data file exists
 def ensure_file_exists():
     if not os.path.exists("user_data.txt"):
@@ -194,4 +135,3 @@ footer_label.pack(side=tk.BOTTOM, fill=tk.X)
 
 # Run the application
 app.mainloop()
-
