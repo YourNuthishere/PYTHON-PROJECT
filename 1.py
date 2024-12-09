@@ -6,16 +6,20 @@ from tkinter import messagebox
 import string
 import random
 
-# File to store user data
+# Files for data storage
 USER_DATA_FILE = 'users.json'
+FORGOTTEN_PASSWORD_FILE = 'user_data.txt'
 
-# Ensure the data file exists
-def ensure_file_exists():
+# Ensure the necessary files exist
+def ensure_files_exist():
     if not os.path.exists(USER_DATA_FILE):
         with open(USER_DATA_FILE, 'w') as file:
             json.dump({}, file)
+    if not os.path.exists(FORGOTTEN_PASSWORD_FILE):
+        with open(FORGOTTEN_PASSWORD_FILE, 'w') as file:
+            pass
 
-# Load user data from file
+# Load user data from JSON file
 def load_user_data():
     try:
         with open(USER_DATA_FILE, 'r') as file:
@@ -23,7 +27,7 @@ def load_user_data():
     except FileNotFoundError:
         return {}
 
-# Save user data to file
+# Save user data to JSON file
 def save_user_data(user_data):
     with open(USER_DATA_FILE, 'w') as file:
         json.dump(user_data, file, indent=4)
@@ -37,7 +41,14 @@ def is_password_used(password):
     return False
 
 # Register a new user
-def register_user(username, password):
+def register_user():
+    username = entry_username.get()
+    password = entry_password.get()
+    
+    if not username or not password:
+        messagebox.showwarning("Input Error", "Please fill in both fields.")
+        return
+    
     user_data = load_user_data()
     if username in user_data:
         messagebox.showerror("Error", "Username already exists.")
@@ -45,56 +56,31 @@ def register_user(username, password):
     if is_password_used(password):
         messagebox.showerror("Error", "This password is already in use. Please choose a different password.")
         return
+    
     hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
     user_data[username] = hashed_password.decode()
     save_user_data(user_data)
     messagebox.showinfo("Success", "User registered successfully!")
 
 # Authenticate a user
-def login_user(username, password):
+def login_user():
+    username = entry_username.get()
+    password = entry_password.get()
+    
+    if not username or not password:
+        messagebox.showwarning("Input Error", "Please fill in both fields.")
+        return
+    
     user_data = load_user_data()
     if username not in user_data:
         messagebox.showerror("Error", "Username not found.")
         return
+    
     hashed_password = user_data[username].encode()
     if bcrypt.checkpw(password.encode(), hashed_password):
         messagebox.showinfo("Success", "Login successful!")
-        return
-    messagebox.showerror("Error", "Incorrect password.")
-
-# GUI Functions
-# Ensure the data file exists
-def ensure_file_exists():
-    if not os.path.exists("user_data.txt"):
-        with open("user_data.txt", "w") as file:
-            pass  # Create an empty file
-
-# Save user data
-def register_user():
-    username = entry_username.get()
-    password = entry_password.get()
-    if username and password:
-        with open("user_data.txt", "a") as file:
-            file.write(f"{username}:{password}\n")
-        messagebox.showinfo("Success", "Account created successfully!")
     else:
-        messagebox.showwarning("Input Error", "Please fill in both fields.")
-
-# Verify user credentials
-def login_user():
-    username = entry_username.get()
-    password = entry_password.get()
-    if username and password:
-        with open("user_data.txt", "r") as file:
-            users = file.readlines()
-            for user in users:
-                stored_username, stored_password = user.strip().split(":")
-                if stored_username == username and stored_password == password:
-                    messagebox.showinfo("Login Success", "You have successfully logged in!")
-                    return
-        messagebox.showerror("Login Failed", "Invalid username or password.")
-    else:
-        messagebox.showwarning("Input Error", "Please fill in both fields.")
+        messagebox.showerror("Error", "Incorrect password.")
 
 # Generate a random password
 def generate_random_password():
@@ -104,34 +90,31 @@ def generate_random_password():
 # Forgot password functionality
 def forgot_password():
     username = entry_username.get()
-    if username:
-        with open("user_data.txt", "r") as file:
-            users = file.readlines()
-            for user in users:
-                stored_username, _ = user.strip().split(":")
-                if stored_username == username:
-                    new_password = generate_random_password()
-                    messagebox.showinfo("New Password", f"Your new password is: {new_password}")
-                    update_password(username, new_password)
-                    return
-        messagebox.showerror("Error", "Username not found.")
-    else:
+    
+    if not username:
         messagebox.showwarning("Input Error", "Please enter your username.")
+        return
+    
+    user_data = load_user_data()
+    if username not in user_data:
+        messagebox.showerror("Error", "Username not found.")
+        return
+    
+    # Generate and display a new password
+    new_password = generate_random_password()
+    messagebox.showinfo("New Password", f"Your new password is: {new_password}")
+    
+    # Store the new password in user_data.txt
+    with open(FORGOTTEN_PASSWORD_FILE, 'a') as file:
+        file.write(f"{username}: {new_password}\n")
+    
+    # Update the password in users.json
+    hashed_password = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt())
+    user_data[username] = hashed_password.decode()
+    save_user_data(user_data)
 
-# Update the password in the data file
-def update_password(username, new_password):
-    with open("user_data.txt", "r") as file:
-        users = file.readlines()
-    with open("user_data.txt", "w") as file:
-        for user in users:
-            stored_username, stored_password = user.strip().split(":")
-            if stored_username == username:
-                file.write(f"{stored_username}:{new_password}\n")
-            else:
-                file.write(f"{stored_username}:{stored_password}\n")
-
-# Ensure the data file exists
-ensure_file_exists()
+# Ensure the data files exist
+ensure_files_exist()
 
 # Create the GUI application
 app = tk.Tk()
@@ -142,7 +125,7 @@ app.configure(bg="#f0f0f0")
 # Header Label
 header_label = tk.Label(
     app,
-    text="Welcome to User Authentication System",
+    text="Welcome to Stay Safe System",
     bg="#4CAF50",
     fg="white",
     font=("Arial", 14, "bold"),
@@ -194,4 +177,3 @@ footer_label.pack(side=tk.BOTTOM, fill=tk.X)
 
 # Run the application
 app.mainloop()
-
