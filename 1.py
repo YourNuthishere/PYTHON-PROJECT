@@ -5,7 +5,6 @@ import tkinter as tk
 from tkinter import messagebox
 import string
 import random
-
 # Files for data storage
 USER_DATA_FILE = 'users.json'
 FORGOTTEN_PASSWORD_FILE = 'user_data.txt'
@@ -109,7 +108,7 @@ def forgot_password():
         file.write(f"{username}: {new_password}\n")
     
     # Update the password in users.json
-    hashed_password = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt())
+    hashed_password = bcrypt.hashpw(new_password.encode().gensalt())
     user_data[username] = hashed_password.decode()
     save_user_data(user_data)
 
