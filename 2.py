@@ -1,3 +1,4 @@
+"""
 import tkinter as tk
 from tkinter import messagebox
 import random
@@ -135,3 +136,4 @@ footer_label.pack(side=tk.BOTTOM, fill=tk.X)
 
 # Run the application
 app.mainloop()
+"""

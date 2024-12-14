@@ -1,3 +1,4 @@
+"""
 import json
 import bcrypt
 import os
@@ -176,3 +177,4 @@ footer_label.pack(side=tk.BOTTOM, fill=tk.X)
 
 # Run the application
 app.mainloop()
+"""
