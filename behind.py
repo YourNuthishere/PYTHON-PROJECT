@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 import tkinter as tk
 from tkinter import messagebox
 import string
@@ -458,7 +458,6 @@ class UserAuthApp(tk.Tk, Registration, Login, PasswordManagement):
 
 
 
-=======
 import tkinter as tk
 from tkinter import messagebox
 import string
@@ -699,7 +698,8 @@ class UserAuthApp(tk.Tk):
             frame.pack_forget()
         self.frames[page_name].pack(fill=tk.BOTH, expand=True)
 
+"""
 if __name__ == "__main__":
     app = UserAuthApp()
     app.mainloop()
->>>>>>> 425f7bc229f252b6bd41328463df26d98a04b8c1
+"""
